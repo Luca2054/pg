@@ -1,15 +1,8 @@
 
 
-def main():
-    vstup = int(input("Zadej cislo: "))
 
-        if vstup > 10:
-            print("vetsi nez 10")   
-        elif vstup < 10:
-            print("menši nez 10")    
-        else vetup = 10:¨
-            print("rovno 10")         
-        
-
-if __name__ == "__name__":
-    main()
+def sudy_nebo_lichy(cislo):
+    if cislo % 2 == 0:
+        print(f"Číslo {cislo} je sudé")
+    else:
+        print(f"Číslo {cislo} je liché")
