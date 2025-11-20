@@ -1,0 +1,37 @@
+class ChabnaCastka(Exception):
+    pass
+class BankovniUcet:
+    def __init__(self, jmeno):
+        self.jmeno = jmeno
+        self.__zustatek = 0 # je zapouzřena __ -> nelze z venku přistoupit k danému atributu
+
+    def vloz(self, suma):
+        if suma <= 0:
+            raise ChabnaCastka("nelze")
+        self.__zustatek += suma
+
+
+
+    def vyber(self, suma):
+        if suma <= 0:
+            raise ChabnaCastka("nelze")
+        self.__zustatek += suma
+
+    def __str__ (self):
+        return f"Ucet vlastni {self.jmeno} a je na nem {self.__zustatek}Kc."
+    
+if __name__ == "__main__":
+    ucet = BankovniUcet("Alice")
+    print(ucet)
+
+    ucet.vloz(100)
+    print(ucet)
+
+    ucet.vyber(50)
+    print(ucet)
+
+    ucet.vloz(10)
+    print(ucet)
+
+    ucet.vyber(1000)
+    print(ucet)
