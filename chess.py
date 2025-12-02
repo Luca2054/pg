@@ -43,8 +43,34 @@ class Piece(ABC):
 
 class Pawn(Piece):
     def possible_moves(self):
-        return []
-    
+        """
+        Vrátí možné tahy pěšce na prázdné desce (bez kontroly obsazení).
+        Bílý pěšec jde směrem +1, černý směrem -1.
+        Podporuje 1 krok vpřed, 2 kroky z výchozí řady a diagonální pohyby pro bránící tahy.
+        """
+        row, col = self.position
+        moves = []
+        forward = 1 if self.color == 'white' else -1
+
+        # Jeden krok vpřed
+        one = (row + forward, col)
+        if self.is_position_on_board(one):
+            moves.append(one)
+
+        # Dva kroky z výchozí pozice
+        start_row = 2 if self.color == 'white' else 7
+        two = (row + 2 * forward, col)
+        if row == start_row and self.is_position_on_board(two):
+            moves.append(two)
+
+        # Diagonálně pro bránící tahy
+        for dc in (-1, 1):
+            diag = (row + forward, col + dc)
+            if self.is_position_on_board(diag):
+                moves.append(diag)
+
+        return moves
+
     def __str__(self):
         return f'Pawn({self.color}) at position {self.position}'
 
@@ -72,20 +98,17 @@ class Knight(Piece):
 class Bishop(Piece):
     def possible_moves(self):
         row, col = self.position
-        moves = [(row + 1, col + 1), (row + 1, col - 1), (row - 1, col + 1), (row - 1, col - 1)]
+        moves = []
+        directions = [(1, 1), (1, -1), (-1, 1), (-1, -1)]
 
-        for dr, dc in moves:
-            row, col = row + dr, col + dc
-            while self.is_position_on_board((row, col)):
-                moves.append((row, col))
-                row += dr
-                col += dc
-           
-        final_moves = []
-        for move in moves:
-            if self.is_position_on_board(move):
-                final_moves.append(move)
-        return final_moves
+        for dr, dc in directions:
+            r, c = row + dr, col + dc
+            while self.is_position_on_board((r, c)):
+                moves.append((r, c))
+                r += dr
+                c += dc
+
+        return moves
     def __str__(self):
         return f'Bishop({self.color}) at position {self.position}'
 
@@ -94,20 +117,17 @@ class Bishop(Piece):
 class Rook(Piece):
     def possible_moves(self):
         row, col = self.position
-        moves = [(row + 1, col), (row - 1, col), (row, col + 1), (row, col - 1)]
-           
+        moves = []
+        directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]
+
         for dr, dc in directions:
-            row, col = row + dr, col + dc
+            r, c = row + dr, col + dc
             while self.is_position_on_board((r, c)):
                 moves.append((r, c))
                 r += dr
                 c += dc
 
-        final_moves = []
-        for move in moves:
-            if self.is_position_on_board(move):
-                final_moves.append(move)
-        return final_moves
+        return moves
     def __str__(self):
         return f'Rook({self.color}) at position {self.position}'
 
@@ -116,22 +136,20 @@ class Rook(Piece):
 class Queen(Piece):
     def possible_moves(self):
         row, col = self.position
-        moves = [(row + 1, col + 1), (row + 1, col - 1), (row - 1, col + 1), (row - 1, col - 1), 
-                (row + 1, col), (row - 1, col), (row, col + 1), (row, col - 1)]
-      
+        moves = []
+        directions = [
+            (1, 1), (1, -1), (-1, 1), (-1, -1),
+            (1, 0), (-1, 0), (0, 1), (0, -1)
+        ]
+
         for dr, dc in directions:
-            row, col = row + dr, col + dc
+            r, c = row + dr, col + dc
             while self.is_position_on_board((r, c)):
                 moves.append((r, c))
-                row += dr
-                col += dc        
-            
-            final_moves = []
+                r += dr
+                c += dc
 
-        for move in moves:
-            if self.is_position_on_board(move):
-                final_moves.append(move)
-        return final_moves
+        return moves
     def __str__(self):
         return f'Queen({self.color}) at position {self.position}'
 
@@ -139,30 +157,31 @@ class Queen(Piece):
 class King(Piece):
     def possible_moves(self):
         row, col = self.position
-        moves = [(row + 1, col + 1), (row + 1, col - 1), (row - 1, col + 1), (row - 1, col - 1),
-                (row + 1, col), (row - 1, col), (row, col + 1), (row, col - 1)]
+        moves = []
+        directions = [
+            (1, 1), (1, -1), (-1, 1), (-1, -1),
+            (1, 0), (-1, 0), (0, 1), (0, -1)
+        ]
 
         for dr, dc in directions:
-            row, col = row + dr, col + dc
-            while self.is_position_on_board((r, c)):
+            r, c = row + dr, col + dc
+            if self.is_position_on_board((r, c)):
                 moves.append((r, c))
-                row += dr
-                col += dc
 
-        final_moves = []
-        for move in moves:
-            if self.is_position_on_board(move):
-                final_moves.append(move)
-        return final_moves
+        return moves
     def __str__(self):
         return f'King({self.color}) at position {self.position}'
 
 
 if __name__ == "__main__":
-    piece = Knight("black", (1, 2))
-    piece = Pawn("white", (8, 5))
-    piece = Queen ("black", (2, 2))
-    piece = King ("black", (1,4))
-    piece = Rook ("black", (1, 1))
-    print(piece)
-    print(piece.possible_moves())
+    pieces = [
+        Knight("black", (1, 2)),
+        Pawn("white", (2, 5)),
+        Queen("black", (2, 2)),
+        King("black", (1, 4)),
+        Rook("black", (1, 1)),
+    ]
+
+    for p in pieces:
+        print(p)
+        print(p.possible_moves())
